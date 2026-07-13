@@ -1,0 +1,70 @@
+'use client'
+
+import SplitText from '@/components/split-text'
+import { AGENCY, ABOUT } from '@/constants/campaign'
+import { useSectionReveal } from '@/hooks/use-section-reveal'
+
+const AboutHero = () => {
+  const scopeRef = useSectionReveal({
+    start: 'top 95%',
+    borderDuration: 0.55,
+    iconDuration: 0.4,
+    iconStagger: 0.05,
+    wordDuration: 0.55,
+    wordStagger: 0.02,
+    overlap: 0.35,
+  })
+
+  return (
+    <section
+      ref={scopeRef}
+      id="about-hero"
+      className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden bg-background pt-[8rem]"
+    >
+      <div className="relative mx-auto flex w-full max-w-[1600px] flex-col px-6 pb-16 lg:px-10">
+        <div className="grid grid-cols-12 gap-6 lg:gap-8">
+          <div className="col-span-12 lg:col-span-9">
+            <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.28em] text-foreground/60">
+              <span className="border border-muted px-2 py-0.5 font-mono text-[0.7rem] text-foreground/80">
+                01
+              </span>
+              <span
+                className="h-px w-8 bg-muted"
+                data-reveal="icon"
+                aria-hidden="true"
+              />
+              <span>{AGENCY.brand} / About</span>
+            </div>
+
+            <h1 className="mt-10 text-balance text-[clamp(2.5rem,6.6vw,6.5rem)] leading-[0.94] tracking-[0.005em]">
+              <SplitText mode="chars">{ABOUT.hero.heading}</SplitText>
+            </h1>
+          </div>
+
+          <aside
+            aria-hidden="true"
+            className="col-span-12 hidden flex-col justify-end gap-6 lg:col-span-3 lg:flex"
+          >
+            <div className="flex items-center gap-3">
+              <span
+                data-reveal="icon"
+                className="block h-px w-14 bg-accent"
+              />
+              <span className="font-mono text-[0.65rem] uppercase tracking-[0.28em] text-foreground/50">
+                Est. 2025
+              </span>
+            </div>
+            <div
+              data-reveal="icon"
+              className="font-display text-[6rem] leading-none tracking-[0.005em] text-foreground/85"
+            >
+              17<span className="text-accent">76</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default AboutHero

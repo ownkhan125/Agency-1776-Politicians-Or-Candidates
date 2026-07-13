@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react'
 
+import { useMagnetic } from '@/hooks/use-magnetic'
 import { cn } from '@/utils/cn'
 
 const CtaButton = ({
@@ -11,17 +12,23 @@ const CtaButton = ({
   type = 'button',
   variant = 'primary',
   className,
+  magnetic = true,
 }) => {
+  const magneticRef = useMagnetic({
+    strength: magnetic ? 0.28 : 0,
+    childSelector: '[data-magnet-child]',
+  })
+
   const base =
-    'group inline-flex items-center gap-3 px-6 py-4 text-sm font-black uppercase tracking-[0.14em] transition-colors'
+    'group relative inline-flex items-center gap-3 px-6 py-4 font-display text-base uppercase tracking-[0.16em] leading-none transition-colors'
 
   const styles =
     variant === 'primary'
-      ? 'bg-accent text-foreground hover:bg-foreground hover:text-background'
+      ? 'bg-accent text-on-accent hover:bg-foreground hover:text-background'
       : 'border border-foreground text-foreground hover:bg-foreground hover:text-background'
 
   const content = (
-    <>
+    <span data-magnet-child className="inline-flex items-center gap-3">
       <span>{children}</span>
       <motion.span
         aria-hidden="true"
@@ -29,7 +36,7 @@ const CtaButton = ({
         initial={false}
         whileHover={{ scaleX: 1.35 }}
       />
-    </>
+    </span>
   )
 
   const motionProps = {
@@ -41,14 +48,24 @@ const CtaButton = ({
 
   if (href) {
     return (
-      <motion.a href={href} {...motionProps}>
+      <motion.a
+        ref={magneticRef}
+        href={href}
+        onClick={onClick}
+        {...motionProps}
+      >
         {content}
       </motion.a>
     )
   }
 
   return (
-    <motion.button type={type} onClick={onClick} {...motionProps}>
+    <motion.button
+      ref={magneticRef}
+      type={type}
+      onClick={onClick}
+      {...motionProps}
+    >
       {content}
     </motion.button>
   )

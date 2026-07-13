@@ -9,16 +9,21 @@ import { gsap } from '@/utils/register-gsap'
  * position between `start` and `end`. Use for section headings that should
  * feel like they are being "pulled out of the page" by the reader.
  *
- * Targets `[data-scrub="word"]` inside the ref. Provide those via <SplitText mode="scrub">.
+ * Tuned so the heading is ALREADY readable the instant it enters view: it
+ * starts at ~40% opacity (not 12%) and finishes resolving high in the
+ * viewport, so scrolling isn't a prerequisite for parsing the title.
+ *
+ * Targets `[data-scrub="word"]` inside the ref. Provide those via
+ * <SplitText mode="scrub">.
  */
 
 const DEFAULTS = {
-  start: 'top 85%',
-  end: 'top 35%',
-  scrub: 0.8,
-  fromOpacity: 0.12,
-  fromY: 32,
-  stagger: 0.06,
+  start: 'top 92%',
+  end: 'top 55%',
+  scrub: 0.5,
+  fromOpacity: 0.4,
+  fromY: 18,
+  stagger: 0.03,
 }
 
 export const useScrubHeading = (options = {}) => {

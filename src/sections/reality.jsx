@@ -1,8 +1,8 @@
 'use client'
 
 import CtaButton from '@/components/cta-button'
-import GridBackdrop from '@/components/grid-backdrop'
 import Icon from '@/components/icon'
+import LineBackdrop from '@/components/line-backdrop'
 import RevealBorder from '@/components/reveal-border'
 import SplitText from '@/components/split-text'
 import { REALITY } from '@/constants/campaign'
@@ -19,11 +19,16 @@ const Reality = () => {
       id="reality"
       className="relative isolate overflow-hidden bg-surface py-32"
     >
-      <GridBackdrop tone="muted" />
+      <LineBackdrop tone="muted" columns={12} pulses={3} />
 
       <div className="relative mx-auto max-w-[1600px] px-6 lg:px-10">
+        {/* Editorial split — big oversize index on the left, pull-quote body
+            on the right. No aspect tile, no repeated card treatment. */}
         <div className="grid grid-cols-12 gap-8">
-          <div className="col-span-12 lg:col-span-5">
+          <aside
+            aria-hidden="true"
+            className="col-span-12 flex flex-col justify-between border-l border-accent pl-6 lg:col-span-3"
+          >
             <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.28em] text-accent">
               <span className="border border-accent px-2 py-0.5 font-mono text-[0.7rem] text-accent">
                 03
@@ -33,46 +38,45 @@ const Reality = () => {
                 data-reveal="icon"
                 aria-hidden="true"
               />
+            </div>
+
+            <div
+              data-reveal="icon"
+              className="font-display hidden text-[clamp(7rem,12vw,12rem)] leading-[0.85] tracking-[0.005em] text-accent lg:block"
+            >
+              /03
+            </div>
+
+            <div className="mt-6 hidden items-center gap-3 text-[0.68rem] uppercase tracking-[0.28em] text-foreground/50 lg:flex">
+              <Icon name="pulse" className="h-5 w-5 text-accent" strokeWidth={1.5} />
               <span>{REALITY.eyebrow}</span>
             </div>
+          </aside>
 
-            <div className="mt-10 hidden lg:block">
-              <div className="relative aspect-[4/5] max-w-[420px] bg-background p-8">
-                <RevealBorder tone="accent" />
-                <div className="relative flex h-full flex-col justify-between">
-                  <Icon
-                    name="pulse"
-                    className="h-10 w-10 text-accent"
-                    strokeWidth={1.5}
-                  />
-                  <div
-                    data-reveal="icon"
-                    aria-hidden="true"
-                    className="text-[6rem] font-black leading-none tracking-[-0.06em] text-foreground/90"
-                  >
-                    <span className="text-accent">/</span>03
-                  </div>
-                  <div
-                    aria-hidden="true"
-                    className="h-px w-full bg-muted"
-                    data-reveal="icon"
-                  />
-                </div>
-              </div>
+          <div className="col-span-12 lg:col-span-9">
+            <div className="text-[0.72rem] uppercase tracking-[0.28em] text-accent lg:hidden">
+              {REALITY.eyebrow}
             </div>
-          </div>
 
-          <div className="col-span-12 lg:col-span-7">
             <h2
               ref={headingRef}
-              className="text-balance text-[clamp(2.25rem,5vw,4.25rem)] font-black leading-[1] tracking-[-0.02em]"
+              className="mt-4 text-balance text-[clamp(2.75rem,6vw,5.5rem)] leading-[0.95] tracking-[0.005em] lg:mt-0"
             >
               <SplitText mode="scrub">{REALITY.heading}</SplitText>
             </h2>
 
-            <div className="relative mt-12 border-l border-accent pl-8">
-              <p className="text-lg leading-relaxed text-foreground/80 lg:text-xl">
-                <SplitText mode="reveal">{REALITY.body}</SplitText>
+            {/* Body reads as a full-width pull-quote against the section. */}
+            <div className="relative mt-12 bg-background p-8 lg:p-12">
+              <RevealBorder tone="foreground" />
+
+              <div
+                data-reveal="icon"
+                aria-hidden="true"
+                className="absolute left-0 top-0 h-full w-1 bg-accent"
+              />
+
+              <p className="text-lg leading-relaxed text-foreground/85 lg:text-xl">
+                <SplitText mode="block">{REALITY.body}</SplitText>
               </p>
             </div>
 

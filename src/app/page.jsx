@@ -1,3 +1,4 @@
+import Footer from '@/components/footer'
 import Contact from '@/sections/contact'
 import Forward from '@/sections/forward'
 import Hero from '@/sections/hero'
@@ -14,6 +15,7 @@ const HomePage = () => {
       <Scope />
       <Process />
       <Contact />
+      <Footer />
     </main>
   )
 }

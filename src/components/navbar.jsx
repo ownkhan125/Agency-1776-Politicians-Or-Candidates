@@ -1,32 +1,58 @@
 'use client'
 
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 
 import CtaButton from '@/components/cta-button'
 import Icon from '@/components/icon'
+import ThemeToggle from '@/components/theme-toggle'
 import { AGENCY, HERO } from '@/constants/campaign'
 import { gsap, ScrollTrigger } from '@/utils/register-gsap'
 import { cn } from '@/utils/cn'
 
+/*
+ * `id` is the DOM id used to derive scroll-active state on the home page.
+ * `href` is prefixed with `/` so section links resolve back to the home page
+ * from `/about` (or any future route). The About link is a plain page link.
+ */
 const LINKS = [
-  { id: 'forward', label: 'Forward', href: '#forward' },
-  { id: 'reality', label: 'Reality', href: '#reality' },
-  { id: 'solutions', label: 'Solutions', href: '#solutions' },
-  { id: 'process', label: 'Process', href: '#process' },
-  { id: 'contact', label: 'Contact', href: '#contact' },
+  { id: 'forward', label: 'Forward', href: '/#forward' },
+  { id: 'reality', label: 'Reality', href: '/#reality' },
+  { id: 'solutions', label: 'Solutions', href: '/#solutions' },
+  { id: 'process', label: 'Process', href: '/#process' },
+  { id: 'about', label: 'About', href: '/about' },
+  { id: 'contact', label: 'Contact', href: '/#contact' },
 ]
+
+const normaliseCtaHref = (href) =>
+  href.startsWith('#') ? `/${href}` : href
 
 /*
  * Fixed primary navbar. Sits directly below the TopBrandBar.
- * - GSAP-powered text-mask swap on hover (top word rises out, bottom word
- *   rises into place) + a subtle accent glow.
- * - Small accent dot marks the "current section" — driven by ScrollTrigger.
+ *
+ * Desktop (lg+):
+ *   - Full inline nav row (unchanged behaviour) with hover mask, active
+ *     ScrollTrigger dot, theme toggle, primary CTA.
+ *
+ * Below lg (mobile + tablet):
+ *   - Nav labels collapse into a hamburger button.
+ *   - Hamburger opens a fullscreen overlay drawer with all links, theme
+ *     toggle, and the primary CTA at the bottom.
+ *   - Drawer opens/closes via motion/react — same animation stack the rest
+ *     of the site uses.
+ *   - Body scroll + ScrollSmoother paused while open.
+ *   - `Escape` closes the drawer; opening focuses the first link; closing
+ *     returns focus to the hamburger button.
+ *   - Clicking any drawer link closes the drawer automatically.
  */
 
 const Navbar = () => {
   const rootRef = useRef(null)
+  const hamburgerRef = useRef(null)
   const [activeId, setActiveId] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
   const heroCta = HERO.ctas[0]
+  const normalisedCtaHref = normaliseCtaHref(heroCta.href)
 
   useLayoutEffect(() => {
     if (!rootRef.current) return undefined
@@ -43,7 +69,6 @@ const Navbar = () => {
       })
     }).filter(Boolean)
 
-    // When the hero is back in view, no nav link should read as active.
     const hero = document.getElementById('home')
     if (hero) {
       triggers.push(
@@ -60,51 +85,278 @@ const Navbar = () => {
     return () => triggers.forEach((t) => t.kill())
   }, [])
 
+  /*
+   * Body / ScrollSmoother scroll lock. When the drawer opens we freeze both
+   * the native document scroll (so mobile Safari doesn't overscroll the page
+   * behind the overlay) AND the ScrollSmoother instance (so wheel events
+   * captured on `#smooth-wrapper` don't push the virtual scroll while the
+   * drawer covers the viewport). We restore on close and on unmount.
+   */
+  useEffect(() => {
+    const smoother =
+      typeof window !== 'undefined' &&
+      window.ScrollSmoother &&
+      window.ScrollSmoother.get &&
+      window.ScrollSmoother.get()
+    if (menuOpen) {
+      document.documentElement.style.overflow = 'hidden'
+      document.body.style.overflow = 'hidden'
+      if (smoother && smoother.paused) smoother.paused(true)
+    } else {
+      document.documentElement.style.overflow = ''
+      document.body.style.overflow = ''
+      if (smoother && smoother.paused) smoother.paused(false)
+    }
+    return () => {
+      document.documentElement.style.overflow = ''
+      document.body.style.overflow = ''
+      if (smoother && smoother.paused) smoother.paused(false)
+    }
+  }, [menuOpen])
+
+  // ESC to close. Both listeners registered with capture so nothing else in
+  // the pipeline (ScrollSmoother's Observer, page-level handlers, etc.) can
+  // swallow Escape before it reaches us.
+  useEffect(() => {
+    if (!menuOpen) return undefined
+    const handler = (event) => {
+      if (event.key === 'Escape' || event.key === 'Esc') {
+        setMenuOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handler, true)
+    document.addEventListener('keydown', handler, true)
+    return () => {
+      window.removeEventListener('keydown', handler, true)
+      document.removeEventListener('keydown', handler, true)
+    }
+  }, [menuOpen])
+
+  // Close if the viewport widens past `lg` while the drawer is open — the
+  // desktop nav takes over and a stale drawer would double-render.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const handle = () => {
+      if (mq.matches) setMenuOpen(false)
+    }
+    mq.addEventListener('change', handle)
+    return () => mq.removeEventListener('change', handle)
+  }, [])
+
+  const closeMenu = () => {
+    setMenuOpen(false)
+    // Return focus to the hamburger button — no visible flicker because we
+    // do it in the same tick the exit animation starts.
+    hamburgerRef.current?.focus()
+  }
+
   return (
-    <div
-      ref={rootRef}
-      className="fixed inset-x-0 top-10 z-40 border-b border-muted/50 bg-background/80 backdrop-blur-md"
-    >
-      <div className="mx-auto flex h-[68px] max-w-[1600px] items-center px-6 lg:px-10">
-        {/* Brand mark */}
-        <a
-          href="#home"
-          className="group flex items-center gap-3"
-          data-cursor="link"
-        >
-          <Icon name="star" className="h-6 w-6 text-accent" strokeWidth={2} />
-          <span className="text-sm font-black uppercase tracking-[0.24em]">
-            {AGENCY.brand}
-          </span>
-        </a>
-
-        {/* Links */}
-        <nav
-          aria-label="Primary"
-          className="ml-auto mr-auto hidden items-center gap-10 xl:gap-14 lg:flex"
-        >
-          {LINKS.map((link) => (
-            <NavLink
-              key={link.id}
-              label={link.label}
-              href={link.href}
-              active={activeId === link.id}
-            />
-          ))}
-        </nav>
-
-        {/* CTA — reuses the hero primary CTA label; provided content only. */}
-        <div className="ml-auto lg:ml-0">
-          <CtaButton
-            href={heroCta.href}
-            variant="primary"
-            className="!py-3 !px-5 text-xs"
+    <>
+      <div
+        ref={rootRef}
+        className="fixed inset-x-0 top-10 z-50 border-b border-muted/50 bg-background/80 backdrop-blur-md"
+      >
+        <div className="mx-auto flex h-[68px] max-w-[1600px] items-center px-6 lg:px-10">
+          {/* Brand mark */}
+          <a
+            href="/#home"
+            className="group flex items-center gap-3"
+            data-cursor="link"
           >
-            {heroCta.label}
-          </CtaButton>
+            <Icon name="star" className="h-6 w-6 text-accent" strokeWidth={2} />
+            <span className="font-display text-lg uppercase tracking-[0.18em] leading-none">
+              {AGENCY.brand}
+            </span>
+          </a>
+
+          {/* Desktop inline nav (lg+) — unchanged. */}
+          <nav
+            aria-label="Primary"
+            className="ml-auto mr-auto hidden items-center gap-10 xl:gap-14 lg:flex"
+          >
+            {LINKS.map((link) => (
+              <NavLink
+                key={link.id}
+                label={link.label}
+                href={link.href}
+                active={activeId === link.id}
+              />
+            ))}
+          </nav>
+
+          {/* Right cluster — theme toggle, CTA (hidden on very small viewports
+              so the hamburger + toggle + brand still fit), hamburger (< lg). */}
+          <div className="ml-auto flex items-center gap-3 sm:gap-4 lg:ml-0">
+            <ThemeToggle />
+
+            <CtaButton
+              href={normalisedCtaHref}
+              variant="primary"
+              className="!hidden !py-3 !px-4 text-xs sm:!inline-flex sm:!px-5"
+            >
+              {heroCta.label}
+            </CtaButton>
+
+            <button
+              ref={hamburgerRef}
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+              aria-controls="primary-mobile-menu"
+              data-cursor="button"
+              className="relative -mr-1 flex h-11 w-11 items-center justify-center lg:hidden"
+            >
+              <HamburgerIcon open={menuOpen} />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <MobileMenu
+            heroCta={heroCta}
+            heroCtaHref={normalisedCtaHref}
+            activeId={activeId}
+            onClose={closeMenu}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
+
+/*
+ * Two hairline bars that morph into an X on open. Rectangular language, no
+ * circles — matches the site's design rules.
+ */
+const HamburgerIcon = ({ open }) => (
+  <span
+    aria-hidden="true"
+    className="relative flex h-5 w-6 flex-col items-center justify-center"
+  >
+    <motion.span
+      className="absolute h-[2px] w-6 bg-foreground"
+      animate={{ y: open ? 0 : -5, rotate: open ? 45 : 0 }}
+      transition={{ duration: 0.28, ease: [0.85, 0, 0, 1] }}
+    />
+    <motion.span
+      className="absolute h-[2px] w-6 bg-foreground"
+      animate={{
+        y: open ? 0 : 5,
+        rotate: open ? -45 : 0,
+        opacity: 1,
+      }}
+      transition={{ duration: 0.28, ease: [0.85, 0, 0, 1] }}
+    />
+  </span>
+)
+
+/*
+ * Full-viewport overlay drawer. Fades in with a slight vertical rise; each
+ * nav link staggers in on its own delay so the reveal feels intentional. The
+ * drawer's own scroll is enabled so long lists still work on landscape phones.
+ */
+const MobileMenu = ({ heroCta, heroCtaHref, activeId, onClose }) => {
+  const firstLinkRef = useRef(null)
+
+  useEffect(() => {
+    // Focus first link once the mount tick settles.
+    const id = requestAnimationFrame(() => {
+      firstLinkRef.current?.focus()
+    })
+    return () => cancelAnimationFrame(id)
+  }, [])
+
+  return (
+    <motion.div
+      id="primary-mobile-menu"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Primary navigation"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25, ease: [0.85, 0, 0, 1] }}
+      className="fixed inset-0 z-40 flex flex-col overflow-y-auto bg-background/95 backdrop-blur-xl lg:hidden"
+    >
+      {/* Top row inside drawer — brand mark + close button.
+          Sits BELOW the TopBrandBar (10 px tall) so we push down by that
+          amount and by the navbar height so nothing double-stacks. */}
+      <div className="flex items-center justify-between px-6 pb-8 pt-[7rem]">
+        <span className="flex items-center gap-3">
+          <Icon name="star" className="h-6 w-6 text-accent" strokeWidth={2} />
+          <span className="font-display text-lg uppercase tracking-[0.18em] leading-none">
+            {AGENCY.brand}
+          </span>
+        </span>
+      </div>
+
+      {/* Nav labels — big display type, one line per link, staggered reveal. */}
+      <nav
+        aria-label="Primary mobile"
+        className="flex flex-1 flex-col justify-center gap-1 px-6"
+      >
+        {LINKS.map((link, i) => (
+          <motion.a
+            key={link.id}
+            ref={i === 0 ? firstLinkRef : null}
+            href={link.href}
+            onClick={onClose}
+            data-cursor="link"
+            initial={{ opacity: 0, x: -18 }}
+            animate={{ opacity: 1, x: 0 }}
+            /*
+             * No `exit` prop here — otherwise AnimatePresence would wait for
+             * every nested link exit to finish before unmounting the drawer,
+             * which stretches close to nearly a second with the enter stagger.
+             * Skipping child exits lets the parent's 0.25s opacity fade drive
+             * the whole unmount cleanly.
+             */
+            transition={{
+              delay: 0.05 + i * 0.05,
+              duration: 0.4,
+              ease: [0.85, 0, 0, 1],
+            }}
+            className={cn(
+              'font-display group flex items-center gap-5 border-b border-muted/40 py-4 uppercase leading-none tracking-[0.02em] transition-colors',
+              'text-[clamp(2.25rem,8vw,3.75rem)]',
+              activeId === link.id
+                ? 'text-accent'
+                : 'text-foreground hover:text-accent',
+            )}
+          >
+            <span className="font-mono text-[0.65rem] tracking-[0.28em] text-foreground/45">
+              0{i + 1}
+            </span>
+            <span>{link.label}</span>
+            <span
+              aria-hidden="true"
+              className={cn(
+                'ml-auto h-px w-8 origin-right transition-all duration-500',
+                activeId === link.id
+                  ? 'scale-x-100 bg-accent'
+                  : 'scale-x-0 bg-accent group-hover:scale-x-100',
+              )}
+            />
+          </motion.a>
+        ))}
+      </nav>
+
+      {/* Footer row — CTA. Border-top matches the desktop chrome. */}
+      <div className="flex flex-col gap-4 border-t border-muted/60 px-6 pb-10 pt-6">
+        <CtaButton
+          href={heroCtaHref}
+          variant="primary"
+          className="w-full !justify-center !py-4 text-sm"
+          onClick={onClose}
+        >
+          {heroCta.label}
+        </CtaButton>
+      </div>
+    </motion.div>
   )
 }
 
@@ -129,7 +381,7 @@ const NavLink = ({ label, href, active }) => {
     })
     gsap.to(glow, {
       opacity: 1,
-      scale: 1,
+      scaleX: 1,
       duration: 0.5,
       ease: 'power2.out',
     })
@@ -153,7 +405,7 @@ const NavLink = ({ label, href, active }) => {
     })
     gsap.to(glow, {
       opacity: 0,
-      scale: 0.6,
+      scaleX: 0.4,
       duration: 0.5,
       ease: 'power2.out',
     })
@@ -170,11 +422,11 @@ const NavLink = ({ label, href, active }) => {
       data-cursor="link"
       className="group relative flex items-center gap-2 py-1"
     >
-      {/* active dot */}
+      {/* active marker — square accent, matches the site's rectangular language */}
       <span
         aria-hidden="true"
         className={cn(
-          'h-1.5 w-1.5 rounded-full transition-all duration-500',
+          'block h-2 w-[3px] transition-all duration-500',
           active
             ? 'scale-100 bg-accent shadow-[0_0_10px_var(--color-accent)]'
             : 'scale-0 bg-transparent',
@@ -182,13 +434,13 @@ const NavLink = ({ label, href, active }) => {
       />
 
       {/* text mask */}
-      <span className="relative block overflow-hidden text-[0.72rem] font-black uppercase tracking-[0.24em]">
-        {/* subtle accent glow (starts hidden) */}
+      <span className="font-display relative block overflow-hidden text-sm uppercase leading-none tracking-[0.2em]">
+        {/* subtle underline accent that swipes in on hover — no blur, no circle */}
         <span
           data-nav="glow"
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-1/2 top-1/2 -z-10 h-8 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/25 opacity-0 blur-xl will-change-transform"
-          style={{ transform: 'translate(-50%, -50%) scale(0.6)' }}
+          className="pointer-events-none absolute inset-x-0 -bottom-1 -z-10 h-px bg-accent opacity-0 will-change-transform"
+          style={{ transform: 'scaleX(0.4)', transformOrigin: 'left center' }}
         />
         <span
           data-nav="top"

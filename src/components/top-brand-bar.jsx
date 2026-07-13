@@ -57,7 +57,7 @@ const TopBrandBar = () => {
 
 const BrandTab = ({ label, shortLabel, active, href }) => {
   const base =
-    'group relative flex items-center gap-2 px-3 sm:px-4 lg:px-5 text-[0.65rem] sm:text-[0.7rem] font-black uppercase tracking-[0.2em] sm:tracking-[0.22em] transition-colors'
+    'group relative flex items-center gap-2 px-3 sm:px-4 lg:px-5 text-[0.65rem] sm:text-[0.7rem] font-bold uppercase tracking-[0.2em] sm:tracking-[0.22em] transition-colors'
 
   const state = active
     ? 'text-accent'
@@ -75,7 +75,7 @@ const BrandTab = ({ label, shortLabel, active, href }) => {
       {active && (
         <span
           aria-hidden="true"
-          className="h-1.5 w-1.5 rounded-full bg-accent"
+          className="block h-2 w-[3px] bg-accent"
         />
       )}
       <span className="hidden md:inline">{label}</span>
