@@ -74,7 +74,9 @@
       "Bash(node run.js \"C:/Users/General/AppData/Local/Temp/pw-audit.js\")",
       "Bash(node run.js \"C:/Users/General/AppData/Local/Temp/pw-link-check.js\")",
       "Bash(node run.js \"C:/Users/General/AppData/Local/Temp/pw-diag-work.js\")",
-      "Bash(node run.js \"C:/Users/General/AppData/Local/Temp/pw-link-check2.js\")"
+      "Bash(node run.js \"C:/Users/General/AppData/Local/Temp/pw-link-check2.js\")",
+      "Bash(TARGET_URL=http://localhost:3000 node run.js /tmp/playwright-test-topbar-theme.js)",
+      "Bash(TARGET_URL=http://localhost:3001 node run.js /tmp/playwright-test-topbar-theme.js)"
     ]
   }
 }

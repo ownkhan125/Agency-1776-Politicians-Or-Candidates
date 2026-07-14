@@ -160,3 +160,61 @@ html[data-custom-cursor] select,
 html[data-custom-cursor] [contenteditable="true"] {
   cursor: auto;
 }
+
+/* Utility: hide horizontal scrollbar on the top-bar overflow row. */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Chamfered-corner utility — same visual language as the sibling
+   Agency 1776 sites. The element itself paints the border colour and
+   is clipped to an octagon; a ::before pseudo, inset by the border
+   width and clipped identically, paints the interior fill. Wrapped in
+   `@layer components` so Tailwind utilities (positioning, sizing, z)
+   still win when composed on top. */
+@layer components {
+  .chamfer {
+    --chamfer-size: 10px;
+    --chamfer-border: 1px;
+    --chamfer-border-color: color-mix(in srgb, var(--color-muted) 60%, transparent);
+    --chamfer-bg: transparent;
+
+    position: relative;
+    isolation: isolate;
+    background-color: var(--chamfer-border-color);
+    clip-path: polygon(
+      var(--chamfer-size) 0,
+      calc(100% - var(--chamfer-size)) 0,
+      100% var(--chamfer-size),
+      100% calc(100% - var(--chamfer-size)),
+      calc(100% - var(--chamfer-size)) 100%,
+      var(--chamfer-size) 100%,
+      0 calc(100% - var(--chamfer-size)),
+      0 var(--chamfer-size)
+    );
+  }
+
+  .chamfer::before {
+    content: "";
+    position: absolute;
+    inset: var(--chamfer-border);
+    background: var(--chamfer-bg);
+    clip-path: polygon(
+      var(--chamfer-size) 0,
+      calc(100% - var(--chamfer-size)) 0,
+      100% var(--chamfer-size),
+      100% calc(100% - var(--chamfer-size)),
+      calc(100% - var(--chamfer-size)) 100%,
+      var(--chamfer-size) 100%,
+      0 calc(100% - var(--chamfer-size)),
+      0 var(--chamfer-size)
+    );
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .chamfer-xs { --chamfer-size: 4px; }
+  .chamfer-sm { --chamfer-size: 6px; }
+  .chamfer-md { --chamfer-size: 10px; }
+  .chamfer-lg { --chamfer-size: 14px; }
+  .chamfer-xl { --chamfer-size: 20px; }
+}
