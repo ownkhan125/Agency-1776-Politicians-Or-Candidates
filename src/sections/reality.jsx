@@ -62,7 +62,7 @@ const Reality = () => {
               ref={headingRef}
               className="mt-4 text-balance text-[clamp(2.75rem,6vw,5.5rem)] leading-[0.95] tracking-[0.005em] lg:mt-0"
             >
-              <SplitText mode="scrub">{REALITY.heading}</SplitText>
+              <SplitText mode="words">{REALITY.heading}</SplitText>
             </h2>
 
             {/* Body reads as a full-width pull-quote against the section. */}

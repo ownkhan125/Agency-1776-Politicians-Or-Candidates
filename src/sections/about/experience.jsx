@@ -39,7 +39,7 @@ const Experience = () => {
               ref={headingRef}
               className="text-balance text-[clamp(2.75rem,6.5vw,6rem)] leading-[0.92] tracking-[0.005em]"
             >
-              <SplitText mode="scrub">{ABOUT.experience.heading}</SplitText>
+              <SplitText mode="words">{ABOUT.experience.heading}</SplitText>
             </h2>
 
             <div className="relative mt-12 bg-background p-8 lg:p-12">

@@ -61,7 +61,20 @@
       "Bash(node run.js rd-about.js)",
       "Bash(node run.js rd-about-content.js)",
       "Bash(node run.js rd-navbar.js)",
-      "Bash(node run.js rd-navbar-diag.js)"
+      "Bash(node run.js rd-navbar-diag.js)",
+      "Bash(node run.js rd-solutions.js)",
+      "Bash(node run.js /tmp/pw-pricing.js)",
+      "Bash(node run.js rd-work.js)",
+      "Bash(node run.js rd-contact.js)",
+      "Bash(node run.js rd-contact-shot.js)",
+      "Bash(node run.js rd-nav-crawl.js)",
+      "Bash(node run.js rd-combobox.js)",
+      "Bash(node run.js /tmp/playwright-test-antigravity.js)",
+      "Bash(node run.js \"C:/Users/General/AppData/Local/Temp/pw-antigravity3.js\")",
+      "Bash(node run.js \"C:/Users/General/AppData/Local/Temp/pw-audit.js\")",
+      "Bash(node run.js \"C:/Users/General/AppData/Local/Temp/pw-link-check.js\")",
+      "Bash(node run.js \"C:/Users/General/AppData/Local/Temp/pw-diag-work.js\")",
+      "Bash(node run.js \"C:/Users/General/AppData/Local/Temp/pw-link-check2.js\")"
     ]
   }
 }

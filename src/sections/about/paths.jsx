@@ -36,7 +36,7 @@ const Paths = () => {
             ref={headingRef}
             className="mt-8 text-balance text-[clamp(3rem,7vw,6rem)] leading-[0.92] tracking-[0.005em]"
           >
-            <SplitText mode="scrub">{ABOUT.paths.heading}</SplitText>
+            <SplitText mode="words">{ABOUT.paths.heading}</SplitText>
           </h2>
 
           <p className="mt-8 max-w-3xl text-lg leading-relaxed text-foreground/75 lg:text-xl">

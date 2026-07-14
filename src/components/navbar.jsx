@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { AnimatePresence, motion } from 'motion/react'
 
 import CtaButton from '@/components/cta-button'
@@ -10,22 +11,40 @@ import { AGENCY, HERO } from '@/constants/campaign'
 import { gsap, ScrollTrigger } from '@/utils/register-gsap'
 import { cn } from '@/utils/cn'
 
+// Animated variant of Next.js Link so the mobile menu can keep its staggered
+// slide-in reveal while still using client-side navigation.
+const MotionLink = motion.create(Link)
+
 /*
  * `id` is the DOM id used to derive scroll-active state on the home page.
  * `href` is prefixed with `/` so section links resolve back to the home page
  * from `/about` (or any future route). The About link is a plain page link.
  */
+/*
+ * `Solutions` now points to the dedicated Solutions page. Its `id` is unique
+ * so it never gets confused with the home page's `#solutions` section (still
+ * scrollable on home; just no direct nav link).
+ */
+/*
+ * Every nav item points to a real page route. Legacy home-section anchors
+ * (Forward / Reality / Process → `/#foo`) were removed as part of the
+ * site-wide navigation audit; those sections still exist on the home page
+ * and are reachable by scrolling, but they are no longer exposed as nav
+ * items (which would have hash-routed and violated the "page routes only"
+ * rule).
+ */
 const LINKS = [
-  { id: 'forward', label: 'Forward', href: '/#forward' },
-  { id: 'reality', label: 'Reality', href: '/#reality' },
-  { id: 'solutions', label: 'Solutions', href: '/#solutions' },
-  { id: 'process', label: 'Process', href: '/#process' },
   { id: 'about', label: 'About', href: '/about' },
-  { id: 'contact', label: 'Contact', href: '/#contact' },
+  { id: 'solutions-page', label: 'Solutions', href: '/solutions' },
+  { id: 'work-page', label: 'Work', href: '/work' },
+  { id: 'pricing-page', label: 'Pricing', href: '/pricing' },
+  { id: 'contact-page', label: 'Contact', href: '/contact' },
 ]
 
+// The header CTA is pulled from the home hero content, which now uses page
+// routes exclusively; this normaliser is retained only as a safety net.
 const normaliseCtaHref = (href) =>
-  href.startsWith('#') ? `/${href}` : href
+  href && href.startsWith('#') ? `/contact` : href
 
 /*
  * Fixed primary navbar. Sits directly below the TopBrandBar.
@@ -159,8 +178,8 @@ const Navbar = () => {
       >
         <div className="mx-auto flex h-[68px] max-w-[1600px] items-center px-6 lg:px-10">
           {/* Brand mark */}
-          <a
-            href="/#home"
+          <Link
+            href="/"
             className="group flex items-center gap-3"
             data-cursor="link"
           >
@@ -168,7 +187,7 @@ const Navbar = () => {
             <span className="font-display text-lg uppercase tracking-[0.18em] leading-none">
               {AGENCY.brand}
             </span>
-          </a>
+          </Link>
 
           {/* Desktop inline nav (lg+) — unchanged. */}
           <nav
@@ -300,7 +319,7 @@ const MobileMenu = ({ heroCta, heroCtaHref, activeId, onClose }) => {
         className="flex flex-1 flex-col justify-center gap-1 px-6"
       >
         {LINKS.map((link, i) => (
-          <motion.a
+          <MotionLink
             key={link.id}
             ref={i === 0 ? firstLinkRef : null}
             href={link.href}
@@ -341,7 +360,7 @@ const MobileMenu = ({ heroCta, heroCtaHref, activeId, onClose }) => {
                   : 'scale-x-0 bg-accent group-hover:scale-x-100',
               )}
             />
-          </motion.a>
+          </MotionLink>
         ))}
       </nav>
 
@@ -412,7 +431,7 @@ const NavLink = ({ label, href, active }) => {
   }
 
   return (
-    <a
+    <Link
       ref={anchorRef}
       href={href}
       onMouseEnter={handleEnter}
@@ -459,7 +478,7 @@ const NavLink = ({ label, href, active }) => {
           {label}
         </span>
       </span>
-    </a>
+    </Link>
   )
 }
 

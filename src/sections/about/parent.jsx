@@ -63,7 +63,7 @@ const Parent = () => {
               ref={headingRef}
               className="text-balance text-[clamp(2.5rem,5.5vw,5rem)] leading-[0.95] tracking-[0.005em]"
             >
-              <SplitText mode="scrub">{ABOUT.parent.heading}</SplitText>
+              <SplitText mode="words">{ABOUT.parent.heading}</SplitText>
             </h2>
 
             <div className="mt-12 space-y-6 text-lg leading-relaxed text-foreground/80 lg:text-xl">
@@ -85,14 +85,22 @@ const Parent = () => {
               <SplitText mode="block">{ABOUT.parent.close}</SplitText>
             </p>
 
-            <div className="mt-12">
-              <CtaButton
-                href={ABOUT.parent.cta.href}
-                variant="primary"
-              >
-                {ABOUT.parent.cta.label}
-              </CtaButton>
-            </div>
+            {/*
+             * `EXPLORE OPS 1776 GROUP` — no destination URL available for the
+             * parent company site, so the CTA is intentionally omitted rather
+             * than shipping a dead link. Restore this block when a URL exists
+             * on ABOUT.parent.cta.href.
+             */}
+            {ABOUT.parent.cta.href && (
+              <div className="mt-12">
+                <CtaButton
+                  href={ABOUT.parent.cta.href}
+                  variant="primary"
+                >
+                  {ABOUT.parent.cta.label}
+                </CtaButton>
+              </div>
+            )}
           </div>
         </div>
       </div>

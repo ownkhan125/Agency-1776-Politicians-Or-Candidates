@@ -40,7 +40,7 @@ const Closer = () => {
                 ref={headingRef}
                 className="mt-8 text-balance text-[clamp(2.5rem,6.5vw,6rem)] leading-[0.95] tracking-[0.005em]"
               >
-                <SplitText mode="scrub">{ABOUT.closer.heading}</SplitText>
+                <SplitText mode="words">{ABOUT.closer.heading}</SplitText>
               </h2>
 
               <div className="mt-12 flex flex-wrap items-center gap-6">

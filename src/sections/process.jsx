@@ -197,7 +197,7 @@ const Process = () => {
             ref={headingRef}
             className="mt-8 text-balance text-[clamp(3.75rem,10vw,8.5rem)] leading-[0.88] tracking-[0.005em]"
           >
-            <SplitText mode="scrub">{PROCESS.heading}</SplitText>
+            <SplitText mode="words">{PROCESS.heading}</SplitText>
           </h2>
         </header>
 
@@ -261,7 +261,7 @@ const Process = () => {
                     </div>
 
                     <h3 className="mt-4 text-3xl leading-[0.95] tracking-[0.01em] lg:text-5xl">
-                      <SplitText mode="chars">{step.title}</SplitText>
+                      <SplitText mode="words">{step.title}</SplitText>
                     </h3>
 
                     <p className="mt-5 max-w-2xl text-base leading-relaxed text-foreground/70 lg:text-lg">

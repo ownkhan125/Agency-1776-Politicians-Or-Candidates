@@ -54,7 +54,7 @@ const Forward = () => {
             ref={headingRef}
             className="mt-8 text-balance text-[clamp(3rem,7.5vw,6.5rem)] leading-[0.92] tracking-[0.005em]"
           >
-            <SplitText mode="scrub">{FORWARD.heading}</SplitText>
+            <SplitText mode="words">{FORWARD.heading}</SplitText>
           </h2>
 
           <p className="mt-8 max-w-2xl text-base leading-relaxed text-foreground/70 lg:text-lg">
@@ -97,7 +97,7 @@ const Forward = () => {
                       </div>
                       <div>
                         <h3 className="text-[clamp(2.75rem,5vw,4.5rem)] leading-[0.92] tracking-[0.005em]">
-                          <SplitText mode="chars">{item.label}</SplitText>
+                          <SplitText mode="words">{item.label}</SplitText>
                         </h3>
                         <div
                           data-reveal="icon"
@@ -115,7 +115,7 @@ const Forward = () => {
                       />
 
                       <h3 className="text-2xl leading-[0.95] tracking-[0.01em] lg:text-3xl">
-                        <SplitText mode="chars">{item.label}</SplitText>
+                        <SplitText mode="words">{item.label}</SplitText>
                       </h3>
                     </>
                   )}

@@ -1,5 +1,6 @@
 'use client'
 
+import Antigravity from '@/components/antigravity'
 import SplitText from '@/components/split-text'
 import { AGENCY, ABOUT } from '@/constants/campaign'
 import { useSectionReveal } from '@/hooks/use-section-reveal'
@@ -19,9 +20,11 @@ const AboutHero = () => {
     <section
       ref={scopeRef}
       id="about-hero"
-      className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden bg-background pt-[8rem]"
+      className="relative isolate flex min-h-[100dvh] flex-col overflow-hidden bg-background pt-[7rem]"
     >
-      <div className="relative mx-auto flex w-full max-w-[1600px] flex-col px-6 pb-16 lg:px-10">
+      <Antigravity />
+
+      <div className="relative z-10 mx-auto flex w-full max-w-[1600px] flex-1 flex-col justify-center px-6 pb-16 lg:px-10">
         <div className="grid grid-cols-12 gap-6 lg:gap-8">
           <div className="col-span-12 lg:col-span-9">
             <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.28em] text-foreground/60">
@@ -37,7 +40,7 @@ const AboutHero = () => {
             </div>
 
             <h1 className="mt-10 text-balance text-[clamp(2.5rem,6.6vw,6.5rem)] leading-[0.94] tracking-[0.005em]">
-              <SplitText mode="chars">{ABOUT.hero.heading}</SplitText>
+              <SplitText mode="words">{ABOUT.hero.heading}</SplitText>
             </h1>
           </div>
 

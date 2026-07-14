@@ -2,69 +2,71 @@
 
 import CtaButton from '@/components/cta-button'
 import Icon from '@/components/icon'
-import LineBackdrop from '@/components/line-backdrop'
-import MagneticCard from '@/components/magnetic-card'
 import RevealBorder from '@/components/reveal-border'
 import SplitText from '@/components/split-text'
-import { AGENCY, CONTACT } from '@/constants/campaign'
+import { AGENCY } from '@/constants/campaign'
+import { PRICING_COMMIT } from '@/constants/pricing'
 import { useScrubHeading } from '@/hooks/use-scrub-heading'
 import { useSectionReveal } from '@/hooks/use-section-reveal'
+import { scrollToId } from '@/utils/scroll-to'
 
-const Contact = () => {
+const PricingCommit = () => {
   const scopeRef = useSectionReveal()
   const headingRef = useScrubHeading()
 
   return (
     <section
       ref={scopeRef}
-      id="contact"
+      id="commit"
       className="relative isolate overflow-hidden bg-background py-32 lg:py-40"
     >
       <div className="relative mx-auto max-w-[1600px] px-6 lg:px-10">
         <div className="relative isolate overflow-hidden bg-surface p-10 lg:p-20">
           <RevealBorder tone="accent" />
 
-          {/* Layered lines *inside* the panel — a denser field that sells the
-              premium feel without pulling attention off the headline. */}
-          <LineBackdrop tone="contrast" columns={20} pulses={3} />
-
-          {/* Center-aligned grid: heading + CTA on the left, a compact
-              decorative monogram tile on the right. The tile matches the hero
-              tile's language so the page opens and closes on the same note. */}
-          <div className="relative grid grid-cols-12 items-center gap-10 lg:gap-12">
+          <div className="relative grid grid-cols-12 items-end gap-10">
             <div className="col-span-12 lg:col-span-8">
               <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.28em] text-foreground/60">
                 <span className="border border-muted px-2 py-0.5 font-mono text-[0.7rem] text-foreground/80">
-                  06
+                  03
                 </span>
                 <span
-                  className="h-px w-8 bg-muted"
                   data-reveal="icon"
                   aria-hidden="true"
+                  className="h-px w-8 bg-muted"
                 />
-                <span>{AGENCY.brand}</span>
               </div>
 
               <h2
                 ref={headingRef}
-                className="mt-8 text-balance text-[clamp(2.75rem,7vw,6.5rem)] leading-[0.95] tracking-[0.005em]"
+                className="mt-8 text-balance text-[clamp(2.75rem,7vw,6rem)] leading-[0.95] tracking-[0.005em]"
               >
-                <SplitText mode="words">{CONTACT.heading}</SplitText>
+                <SplitText mode="words">{PRICING_COMMIT.heading}</SplitText>
               </h2>
 
-              <div className="mt-10">
-                <CtaButton href={CONTACT.cta.href} variant="primary">
-                  {CONTACT.cta.label}
-                </CtaButton>
+              <p className="mt-8 max-w-2xl text-lg leading-relaxed text-foreground/85 lg:text-xl">
+                <SplitText mode="block">{PRICING_COMMIT.body}</SplitText>
+              </p>
+
+              <div className="mt-12 flex flex-wrap items-center gap-4">
+                {PRICING_COMMIT.ctas.map((c) => (
+                  <CtaButton
+                    key={c.label}
+                    href={c.href}
+                    onClick={c.scrollTo ? () => scrollToId(c.scrollTo) : undefined}
+                    variant={c.variant}
+                  >
+                    {c.label}
+                  </CtaButton>
+                ))}
               </div>
             </div>
 
-            {/* Compact decorative sign-off tile — sized down so it supports
-                the heading rather than competing with it. */}
-            <MagneticCard
+            {/* Decorative signature block — mirrors the Contact tile so the
+                pages read as one system. No copy is invented. */}
+            <div
               aria-hidden="true"
               className="col-span-12 hidden lg:col-span-4 lg:flex lg:justify-end"
-              strength={0.12}
             >
               <div className="relative flex aspect-square w-full max-w-[240px] flex-col justify-between border border-accent p-6">
                 <div className="flex items-start justify-between">
@@ -98,7 +100,7 @@ const Contact = () => {
                   </span>
                 </div>
               </div>
-            </MagneticCard>
+            </div>
           </div>
         </div>
       </div>
@@ -106,4 +108,4 @@ const Contact = () => {
   )
 }
 
-export default Contact
+export default PricingCommit

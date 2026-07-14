@@ -46,7 +46,24 @@ const DEFAULTS = {
   iconEase: 'power3.out',
   iconPosition: 0.18,
 
+  // Word-by-word heading reveal — SCROLL-SCRUBBED. Every heading on the
+  // page (h1–h6, plus any non-heading `SplitText mode="words"` block that
+  // renders as display type) gets its own ScrollTrigger, so headings reveal
+  // exactly as they enter the viewport rather than sharing a section-wide
+  // trigger. Tuned for a slower, more cinematic pace: the scrub range is
+  // wider, the stagger between words is longer, and the ease favours a
+  // long tail so the last words settle rather than snap.
+  wordLineStagger: 0.11,
+  wordLineEase: 'power3.out',
+  wordLineY: 30,
+  wordLineBlur: 6,
+  wordLineRotate: -2.5,
+  wordLineScrubStart: 'top 88%',
+  wordLineScrubEnd: 'top 34%',
+  wordLineScrub: 0.85,
+
   // Character-level heading reveal — the reference's signature curve.
+  // Reserved for hero H1s.
   charDuration: 0.7,
   charStagger: 0.018,
   charEase: 'power3.out',
@@ -61,7 +78,7 @@ const DEFAULTS = {
   lineEase: 'power3.out',
   lineY: 12,
   lineBlur: 3,
-  linePosition: 0.12,
+  linePosition: 0.18,
 
   // Legacy word/heading/body tokens — preserved for pre-migration callers.
   headingDuration: 0.55,
@@ -92,12 +109,14 @@ const normalizeOptions = (options) => {
     merged.headingStagger = options.wordStagger
     merged.bodyStagger = options.wordStagger
     merged.charStagger = options.wordStagger
+    merged.wordLineStagger = options.wordStagger
   }
   if (options.wordEase !== undefined) {
     merged.headingEase = options.wordEase
     merged.bodyEase = options.wordEase
     merged.charEase = options.wordEase
     merged.lineEase = options.wordEase
+    merged.wordLineEase = options.wordEase
   }
   return merged
 }
@@ -126,6 +145,7 @@ export const useSectionReveal = (options = {}) => {
       const borders = scope.querySelectorAll('[data-reveal="border"]')
       const icons = scope.querySelectorAll('[data-reveal="icon"]')
       const chars = scope.querySelectorAll('[data-reveal="char"]')
+      const wordLines = scope.querySelectorAll('[data-reveal="word-line"]')
       const lines = scope.querySelectorAll('[data-reveal="line"]')
       const { heading: headingWords, body: bodyWords } = partitionWords(scope)
 
@@ -149,6 +169,16 @@ export const useSectionReveal = (options = {}) => {
           autoAlpha: 0,
           y: opts.charY,
           filter: `blur(${opts.charBlur}px)`,
+          willChange: 'transform, opacity, filter',
+        })
+      }
+      if (wordLines.length) {
+        gsap.set(wordLines, {
+          autoAlpha: 0,
+          y: opts.wordLineY,
+          rotate: opts.wordLineRotate,
+          filter: `blur(${opts.wordLineBlur}px)`,
+          transformOrigin: '0% 100%',
           willChange: 'transform, opacity, filter',
         })
       }
@@ -268,6 +298,37 @@ export const useSectionReveal = (options = {}) => {
           },
           opts.iconPosition,
         )
+      }
+
+      // Per-heading scroll-scrub reveal. Every heading is its own trigger,
+      // so each one reveals as it enters the viewport rather than sharing
+      // a single section-wide scrub. Word-lines not inside a heading (e.g.
+      // the footer wordmark rendered as a <p>) fall back to the section
+      // scope as trigger so they still animate consistently.
+      if (wordLines.length) {
+        const groups = new Map()
+        wordLines.forEach((el) => {
+          const heading = el.closest(HEADING_SELECTOR) || scope
+          if (!groups.has(heading)) groups.set(heading, [])
+          groups.get(heading).push(el)
+        })
+
+        groups.forEach((els, triggerEl) => {
+          gsap.to(els, {
+            autoAlpha: 1,
+            y: 0,
+            rotate: 0,
+            filter: 'blur(0px)',
+            ease: opts.wordLineEase,
+            stagger: opts.wordLineStagger,
+            scrollTrigger: {
+              trigger: triggerEl,
+              start: opts.wordLineScrubStart,
+              end: opts.wordLineScrubEnd,
+              scrub: opts.wordLineScrub,
+            },
+          })
+        })
       }
     }, scope)
 

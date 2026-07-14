@@ -2,36 +2,27 @@
 
 import CtaButton from '@/components/cta-button'
 import Icon from '@/components/icon'
-import LineBackdrop from '@/components/line-backdrop'
-import MagneticCard from '@/components/magnetic-card'
 import RevealBorder from '@/components/reveal-border'
 import SplitText from '@/components/split-text'
-import { AGENCY, CONTACT } from '@/constants/campaign'
+import { AGENCY, SOLUTIONS } from '@/constants/campaign'
 import { useScrubHeading } from '@/hooks/use-scrub-heading'
 import { useSectionReveal } from '@/hooks/use-section-reveal'
 
-const Contact = () => {
+const Closer = () => {
   const scopeRef = useSectionReveal()
   const headingRef = useScrubHeading()
 
   return (
     <section
       ref={scopeRef}
-      id="contact"
+      id="solutions-closer"
       className="relative isolate overflow-hidden bg-background py-32 lg:py-40"
     >
       <div className="relative mx-auto max-w-[1600px] px-6 lg:px-10">
         <div className="relative isolate overflow-hidden bg-surface p-10 lg:p-20">
           <RevealBorder tone="accent" />
 
-          {/* Layered lines *inside* the panel — a denser field that sells the
-              premium feel without pulling attention off the headline. */}
-          <LineBackdrop tone="contrast" columns={20} pulses={3} />
-
-          {/* Center-aligned grid: heading + CTA on the left, a compact
-              decorative monogram tile on the right. The tile matches the hero
-              tile's language so the page opens and closes on the same note. */}
-          <div className="relative grid grid-cols-12 items-center gap-10 lg:gap-12">
+          <div className="relative grid grid-cols-12 items-start gap-10 lg:gap-14">
             <div className="col-span-12 lg:col-span-8">
               <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.28em] text-foreground/60">
                 <span className="border border-muted px-2 py-0.5 font-mono text-[0.7rem] text-foreground/80">
@@ -47,24 +38,27 @@ const Contact = () => {
 
               <h2
                 ref={headingRef}
-                className="mt-8 text-balance text-[clamp(2.75rem,7vw,6.5rem)] leading-[0.95] tracking-[0.005em]"
+                className="mt-8 text-balance text-[clamp(2.5rem,6vw,5.5rem)] leading-[0.95] tracking-[0.005em]"
               >
-                <SplitText mode="words">{CONTACT.heading}</SplitText>
+                <SplitText mode="words">{SOLUTIONS.closer.heading}</SplitText>
               </h2>
 
-              <div className="mt-10">
-                <CtaButton href={CONTACT.cta.href} variant="primary">
-                  {CONTACT.cta.label}
-                </CtaButton>
+              <p className="mt-8 max-w-2xl text-lg leading-relaxed text-foreground/80 lg:text-xl">
+                <SplitText mode="block">{SOLUTIONS.closer.body}</SplitText>
+              </p>
+
+              <div className="mt-12 flex flex-wrap items-center gap-4">
+                {SOLUTIONS.closer.ctas.map((c) => (
+                  <CtaButton key={c.label} href={c.href} variant={c.variant}>
+                    {c.label}
+                  </CtaButton>
+                ))}
               </div>
             </div>
 
-            {/* Compact decorative sign-off tile — sized down so it supports
-                the heading rather than competing with it. */}
-            <MagneticCard
+            <aside
               aria-hidden="true"
               className="col-span-12 hidden lg:col-span-4 lg:flex lg:justify-end"
-              strength={0.12}
             >
               <div className="relative flex aspect-square w-full max-w-[240px] flex-col justify-between border border-accent p-6">
                 <div className="flex items-start justify-between">
@@ -79,14 +73,12 @@ const Contact = () => {
                     className="block h-1.5 w-1.5 bg-accent"
                   />
                 </div>
-
                 <div
                   data-reveal="icon"
                   className="font-display text-[3.75rem] leading-none tracking-[0.005em] text-foreground/90"
                 >
                   17<span className="text-accent">76</span>
                 </div>
-
                 <div className="flex items-center gap-2 border-t border-muted/60 pt-3">
                   <Icon
                     name="arrow"
@@ -98,7 +90,7 @@ const Contact = () => {
                   </span>
                 </div>
               </div>
-            </MagneticCard>
+            </aside>
           </div>
         </div>
       </div>
@@ -106,4 +98,4 @@ const Contact = () => {
   )
 }
 
-export default Contact
+export default Closer

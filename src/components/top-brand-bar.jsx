@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { motion } from 'motion/react'
 
 import { cn } from '@/utils/cn'
@@ -85,14 +86,14 @@ const BrandTab = ({ label, shortLabel, active, href }) => {
 
   if (active && href) {
     return (
-      <a
+      <Link
         href={href}
         role="tab"
         aria-selected="true"
         className={cn(base, state)}
       >
         {inner}
-      </a>
+      </Link>
     )
   }
 

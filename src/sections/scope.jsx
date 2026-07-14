@@ -2,7 +2,6 @@
 
 import { useLayoutEffect, useRef } from 'react'
 
-import Icon from '@/components/icon'
 import SplitText from '@/components/split-text'
 import { SCOPE } from '@/constants/campaign'
 import { gsap } from '@/utils/register-gsap'
@@ -12,117 +11,45 @@ import { useSectionReveal } from '@/hooks/use-section-reveal'
 /*
  * Editorial directory layout — deliberately NOT a bento or card grid. The
  * nine campaign types render as a full-width, hairline-separated directory:
- * each row is a tall band with a running index, an oversize label, and an
- * arrow that slides in on hover. Feels like a table-of-contents in a printed
- * annual report — quiet, ordered, premium.
+ * running index + oversize label per row. Each row is intentionally NOT
+ * clickable (no destination exists for a single campaign-type entry), so
+ * link-cursor affordances, hover animations, sliding arrows, and pointer
+ * cursors were removed as part of the site-wide navigation audit.
  */
 
-const ScopeRow = ({ item, index }) => {
-  const rowRef = useRef(null)
+const ScopeRow = ({ item, index }) => (
+  <li className="relative border-t border-muted/70 last:border-b">
+    <div className="grid grid-cols-12 items-center gap-6 py-8 lg:py-10">
+      {/* Running index */}
+      <div className="col-span-2 lg:col-span-1">
+        <span
+          data-reveal="icon"
+          className="font-mono text-[0.75rem] uppercase tracking-[0.28em] text-accent"
+        >
+          {String(index + 1).padStart(2, '0')}
+        </span>
+      </div>
 
-  const handleEnter = () => {
-    const row = rowRef.current
-    if (!row) return
-    const label = row.querySelector('[data-row="label"]')
-    const arrow = row.querySelector('[data-row="arrow"]')
-    const glow = row.querySelector('[data-row="glow"]')
-    gsap.to(label, { x: 24, duration: 0.5, ease: 'expo.out' })
-    gsap.to(arrow, {
-      x: 0,
-      opacity: 1,
-      duration: 0.45,
-      ease: 'expo.out',
-    })
-    gsap.to(glow, {
-      scaleX: 1,
-      opacity: 1,
-      duration: 0.6,
-      ease: 'power2.out',
-    })
-  }
+      {/* Hairline divider */}
+      <div className="col-span-1 hidden lg:block">
+        <span
+          aria-hidden="true"
+          data-reveal="icon"
+          className="block h-px w-full bg-muted/70"
+        />
+      </div>
 
-  const handleLeave = () => {
-    const row = rowRef.current
-    if (!row) return
-    const label = row.querySelector('[data-row="label"]')
-    const arrow = row.querySelector('[data-row="arrow"]')
-    const glow = row.querySelector('[data-row="glow"]')
-    gsap.to(label, { x: 0, duration: 0.5, ease: 'expo.out' })
-    gsap.to(arrow, {
-      x: -20,
-      opacity: 0,
-      duration: 0.4,
-      ease: 'expo.out',
-    })
-    gsap.to(glow, {
-      scaleX: 0,
-      opacity: 0,
-      duration: 0.5,
-      ease: 'power2.out',
-    })
-  }
-
-  return (
-    <li
-      ref={rowRef}
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-      data-cursor="link"
-      className="group relative border-t border-muted/70 last:border-b"
-    >
-      {/* Hover glow — a horizontal accent band that scales in from the left */}
-      <span
-        data-row="glow"
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-full origin-left bg-accent/[0.03] opacity-0"
-        style={{ transform: 'scaleX(0)' }}
-      />
-
-      <div className="grid grid-cols-12 items-center gap-6 py-8 lg:py-10">
-        {/* Running index */}
-        <div className="col-span-2 lg:col-span-1">
-          <span
-            data-reveal="icon"
-            className="font-mono text-[0.75rem] uppercase tracking-[0.28em] text-accent"
-          >
-            {String(index + 1).padStart(2, '0')}
-          </span>
-        </div>
-
-        {/* Hairline divider */}
-        <div className="col-span-1 hidden lg:block">
-          <span
-            aria-hidden="true"
-            data-reveal="icon"
-            className="block h-px w-full bg-muted/70"
-          />
-        </div>
-
-        {/* Label — the item name, oversize and display-weight */}
-        <div className="col-span-10 lg:col-span-9">
-          <div
-            data-row="label"
-            className="font-display text-[clamp(1.75rem,3.6vw,3rem)] leading-[1] tracking-[0.005em] will-change-transform"
-          >
-            <SplitText mode="chars">{item}</SplitText>
-          </div>
-        </div>
-
-        {/* Arrow — slides in on hover */}
-        <div className="col-span-12 flex justify-end lg:col-span-1">
-          <span
-            data-row="arrow"
-            aria-hidden="true"
-            className="inline-flex h-9 w-9 items-center justify-center border border-accent text-accent will-change-transform"
-            style={{ transform: 'translateX(-20px)', opacity: 0 }}
-          >
-            <Icon name="arrow" className="h-4 w-4" strokeWidth={1.75} />
-          </span>
+      {/* Label — the item name, oversize and display-weight. Not a heading
+          element, so kept on `chars` — the row-item text isn't a section
+          title, and the per-heading scrub trigger doesn't apply. */}
+      <div className="col-span-9 lg:col-span-10">
+        <div className="font-display text-[clamp(1.75rem,3.6vw,3rem)] leading-[1] tracking-[0.005em]">
+          <SplitText mode="chars">{item}</SplitText>
         </div>
       </div>
-    </li>
-  )
-}
+    </div>
+  </li>
+)
 
 const Scope = () => {
   const scopeRef = useSectionReveal()
@@ -176,7 +103,7 @@ const Scope = () => {
             ref={headingRef}
             className="mt-8 text-balance text-[clamp(4.5rem,12vw,10rem)] leading-[0.88] tracking-[0.005em]"
           >
-            <SplitText mode="scrub">{SCOPE.heading}</SplitText>
+            <SplitText mode="words">{SCOPE.heading}</SplitText>
           </h2>
 
           <p className="mt-8 max-w-2xl text-base leading-relaxed text-foreground/70 lg:text-lg">

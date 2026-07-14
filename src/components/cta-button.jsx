@@ -1,9 +1,17 @@
 'use client'
 
+import Link from 'next/link'
 import { motion } from 'motion/react'
 
 import { useMagnetic } from '@/hooks/use-magnetic'
 import { cn } from '@/utils/cn'
+
+// Animated variant of Next.js Link so href-driven CTAs keep the motion
+// treatment (hover lift, tap scale) while using client-side navigation.
+const MotionLink = motion.create(Link)
+
+const isInternalHref = (href) =>
+  typeof href === 'string' && href.startsWith('/') && !href.startsWith('//')
 
 const CtaButton = ({
   children,
@@ -47,6 +55,18 @@ const CtaButton = ({
   }
 
   if (href) {
+    if (isInternalHref(href)) {
+      return (
+        <MotionLink
+          ref={magneticRef}
+          href={href}
+          onClick={onClick}
+          {...motionProps}
+        >
+          {content}
+        </MotionLink>
+      )
+    }
     return (
       <motion.a
         ref={magneticRef}
