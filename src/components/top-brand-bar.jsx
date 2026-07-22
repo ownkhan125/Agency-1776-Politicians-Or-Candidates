@@ -22,9 +22,9 @@ const TOPBAR_ACCENT_60   = 'rgba(191,10,48,0.6)'
 const TOPBAR_ACCENT_06   = 'rgba(191,10,48,0.06)'
 
 const TABS = [
-  { id: 'business',    label: 'Business',                 active: false, href: null },
-  { id: 'politicians', label: 'Politicians or Candidates', active: true,  href: null },
-  { id: 'nonprofit',   label: 'Nonprofit',                active: false, href: null },
+  { id: 'business',    label: 'Business',                 active: false, href: 'https://agency-1776-business.vercel.app' },
+  { id: 'politicians', label: 'Politicians or Candidates', active: true,  href: 'https://agency-1776-politicians-or-candidat.vercel.app/' },
+  { id: 'nonprofit',   label: 'Nonprofit',                active: false, href: 'https://agency-1776-nonprofit.vercel.app' },
 ]
 
 const TopBrandBar = () => {
@@ -96,11 +96,11 @@ const TopBarTab = ({ tab }) => {
       role={tab.href ? undefined : 'presentation'}
       className={cn(
         'relative inline-flex select-none items-center whitespace-nowrap px-3 py-2 text-[10px] uppercase tracking-[0.28em] transition-opacity md:px-5 md:text-[11px]',
-        !isActive && 'cursor-not-allowed',
+        !isActive && !tab.href && 'cursor-not-allowed',
         tab.href ? 'cursor-pointer' : ''
       )}
       style={{ color: isActive ? TOPBAR_ACCENT : TOPBAR_FG_45 }}
-      title={isActive ? undefined : 'Coming soon'}
+      title={isActive || tab.href ? undefined : 'Coming soon'}
     >
       {isActive && (
         <span
